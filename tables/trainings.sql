@@ -14,7 +14,7 @@ CREATE TABLE `training_types`(
 
 -- ====================================================================================================
 -- TRAININGS
--- constraint żeby end timestamp był większy niż start timestamp
+-- TODO constraint żeby end timestamp był większy niż start timestamp
 CREATE TABLE `trainings`(
     `id_trainings` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_users` BIGINT NOT NULL,
@@ -78,8 +78,8 @@ ALTER TABLE `training_splits` ADD INDEX `training_splits_id_trainings_index`(`id
 -- ====================================================================================================
 -- TRAINING LOCALIZATION
 -- partitioned table! note that MariaDB allows max 8192 partitions per table
--- partycjonowanie - co dzień
--- procedura tworzenia nowej pratycji jeśli na dany dzień jeszcze nie ma!
+-- TODO partycjonowanie - co dzień
+-- TODO procedura tworzenia nowej pratycji jeśli na dany dzień jeszcze nie ma!
 CREATE TABLE `training_localization`(
     `id_training_localization` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `id_trainings` BIGINT NOT NULL,

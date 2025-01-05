@@ -1,6 +1,6 @@
 -- ====================================================================================================
 -- LEADERBOARDS
--- TODO WIDOKI LEADERBOARDÓW
+-- TODO widoki leaderboardów 
 CREATE TABLE `leaderboards`(
     `id_leaderboards` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_teams` BIGINT NOT NULL,
