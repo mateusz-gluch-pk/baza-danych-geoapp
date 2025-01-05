@@ -1,5 +1,6 @@
 -- ====================================================================================================
 -- USERS
+-- TODO jeśli ustawiamy deleted at - wykonujemy procedurę soft delete na cofigurations, dashboards, trainings i usuwamy role usera
 CREATE TABLE `users`(
     `id_users` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `login` VARCHAR(255) NOT NULL,
@@ -7,7 +8,7 @@ CREATE TABLE `users`(
     `email` VARCHAR(255) NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `surname` VARCHAR(255) NOT NULL,
-    `language_code` ENUM('') NOT NULL,
+    `language_code` ENUM('EN', 'PL') NOT NULL,
     `account_type` ENUM('free', 'premium') NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,

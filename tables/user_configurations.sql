@@ -21,13 +21,13 @@ ALTER TABLE `user_configurations` ADD INDEX `user_configurations_deleted_at_inde
 
 -- ====================================================================================================
 -- USER CONFIGURATIONS LOG
--- records created after trigger
+-- TODO records created after trigger
 CREATE TABLE `user_configurations_log`(
     `id_user_configurations_log` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `id_user_configurations` BIGINT NOT NULL,
     `id_user` BIGINT NOT NULL,
-    `dashboard` BIGINT NOT NULL,
-    `action` ENUM(`c`, `u`, `d`) NOT NULL,
+    `configuration` JSON NOT NULL,
+    `action` ENUM(`create`, `update`, `delete`) NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id_user_configurations_log`),

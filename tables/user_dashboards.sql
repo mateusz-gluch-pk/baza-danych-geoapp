@@ -21,13 +21,13 @@ ALTER TABLE `user_dashboards` ADD INDEX `user_dashboards_deleted_at_index`(`dele
 
 -- ====================================================================================================
 -- USER DASHBOARDS LOG
--- records created after trigger
+-- TODO records created after trigger
 CREATE TABLE `user_dashboards_log`(
     `id_user_dashboards_log` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_user_dashboards` BIGINT NOT NULL,
     `id_user` BIGINT NOT NULL,
-    `dashboard` BIGINT NOT NULL,
-    `action` ENUM(`c`, `u`, `d`) NOT NULL,
+    `dashboard` JSON NOT NULL,
+    `action` ENUM(`create`, `update`, `delete`) NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id_user_dashboards_log`),
