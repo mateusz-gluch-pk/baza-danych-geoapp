@@ -1,4 +1,5 @@
-
+-- ====================================================================================================
+-- LEADERBOARDS
 CREATE TABLE `leaderboards`(
     `id_leaderboards` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `id_teams` BIGINT NOT NULL,
@@ -12,11 +13,14 @@ CREATE TABLE `leaderboards`(
     `deleted_at` TIMESTAMP NULL,
     `deleted_by` BIGINT NULL
 );
+
 ALTER TABLE
     `leaderboards` ADD INDEX `leaderboards_id_teams_index`(`id_teams`);
 ALTER TABLE
     `leaderboards` ADD INDEX `leaderboards_deleted_at_index`(`deleted_at`);
 
+-- ====================================================================================================
+-- LEADERBOARD ENTRIES
 CREATE TABLE `leaderboard_entries`(
     `id_leaderboard_entries` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `id_users` BIGINT NOT NULL,

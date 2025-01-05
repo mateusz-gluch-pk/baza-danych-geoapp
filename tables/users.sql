@@ -1,3 +1,5 @@
+-- ====================================================================================================
+-- USERS
 CREATE TABLE `users`(
     `id_users` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `login` VARCHAR(255) NOT NULL,
@@ -17,6 +19,8 @@ CREATE TABLE `users`(
 ALTER TABLE `users` ADD INDEX `users_account_type_index`(`account_type`);
 ALTER TABLE `users` ADD INDEX `users_deleted_at_index`(`deleted_at`);
 
+-- ====================================================================================================
+-- USER LOGINS
 CREATE TABLE `user_logins`(
     `id_user_logins` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_users` BIGINT NOT NULL,
