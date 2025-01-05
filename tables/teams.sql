@@ -1,12 +1,15 @@
 -- ====================================================================================================
 -- TEAMS 
+-- WYSZUKIWANIE PO NAZWIE TEAMU - INDEX FULL TEXT
+-- TODO: procedura soft delete 
 CREATE TABLE `teams`(
-    `id_teams` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT ,
+    `id_teams` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
+
     `created_at` TIMESTAMP NOT NULL,
-    `created_by` BIGINT NOT NULL,
+    `created_by` BIGINT NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    `updated_by` BIGINT NOT NULL,
+    `updated_by` BIGINT NULL,
     `deleted_at` TIMESTAMP NULL,
     `deleted_by` BIGINT NULL
 
@@ -27,8 +30,8 @@ CREATE TABLE `teams`(
         REFERENCES `users`(`id_users`)
         ON DELETE SET NULL
 );
-ALTER TABLE
-    `teams` ADD INDEX `teams_deleted_at_index`(`deleted_at`);
+
+ALTER TABLE `teams` ADD INDEX `teams_deleted_at_index`(`deleted_at`);
 
 -- ====================================================================================================
 -- ROLES
@@ -39,14 +42,20 @@ CREATE TABLE `roles`(
 
 -- ====================================================================================================
 -- USER TEAM ROLES
+-- TODO INDEX DELETED AT
 CREATE TABLE `user_team_roles`(
     `id_user_team_roles` BIGINT NOT NULL,
     `id_roles` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_teams` BIGINT NOT NULL,
     `id_users` BIGINT NOT NULL,
 
+    `created_at` TIMESTAMP NOT NULL,
+    `updated_at` TIMESTAMP NOT NULL,
+    `deleted_at` TIMESTAMP NULL,
+
     PRIMARY KEY(`id_user_team_roles`),
-    UNIQUE KEY()
+
+    CONSTRAINT UNIQUE(`id_teams`, `id_users`),
 
     CONSTRAINT `user_team_roles_id_roles_foreign` 
         FOREIGN KEY(`id_roles`) 
