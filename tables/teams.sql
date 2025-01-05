@@ -1,7 +1,7 @@
 -- ====================================================================================================
 -- TEAMS 
 CREATE TABLE `teams`(
-    `id_teams` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_teams` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT ,
     `name` VARCHAR(255) NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
     `created_by` BIGINT NOT NULL,
@@ -9,6 +9,23 @@ CREATE TABLE `teams`(
     `updated_by` BIGINT NOT NULL,
     `deleted_at` TIMESTAMP NULL,
     `deleted_by` BIGINT NULL
+
+    PRIMARY KEY (`id_teams`),
+
+    CONSTRAINT `teams_created_by_foreign` 
+        FOREIGN KEY(`created_by`) 
+        REFERENCES `users`(`id_users`)
+        ON DELETE SET NULL,
+
+    CONSTRAINT `teams_updated_by_foreign` 
+        FOREIGN KEY(`updated_by`) 
+        REFERENCES `users`(`id_users`)
+        ON DELETE SET NULL,
+
+    CONSTRAINT `teams_deleted_by_foreign` 
+        FOREIGN KEY(`deleted_by`) 
+        REFERENCES `users`(`id_users`)
+        ON DELETE SET NULL
 );
 ALTER TABLE
     `teams` ADD INDEX `teams_deleted_at_index`(`deleted_at`);
@@ -28,7 +45,22 @@ CREATE TABLE `user_team_roles`(
     `id_teams` BIGINT NOT NULL,
     `id_users` BIGINT NOT NULL,
 
-    PRIMARY KEY(`id_user_team_roles`)
+    PRIMARY KEY(`id_user_team_roles`),
+    UNIQUE KEY()
+
+    CONSTRAINT `user_team_roles_id_roles_foreign` 
+        FOREIGN KEY(`id_roles`) 
+        REFERENCES `roles`(`id_roles`),
+
+    CONSTRAINT `user_team_roles_id_teams_foreign` 
+        FOREIGN KEY(`id_teams`) 
+        REFERENCES `teams`(`id_teams`)
+        ON DELETE CASCADE,
+    
+    CONSTRAINT `user_team_roles_id_users_foreign` 
+        FOREIGN KEY(`id_users`) 
+        REFERENCES `users`(`id_users`)
+        ON DELETE CASCADE
 );
 
 ALTER TABLE `user_team_roles` ADD UNIQUE `user_team_roles_id_teams_unique`(`id_teams`);
