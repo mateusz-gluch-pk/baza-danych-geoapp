@@ -26,7 +26,7 @@ CREATE TABLE `user_dashboards_log`(
     `id_user_dashboards_log` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_user_dashboards` BIGINT NOT NULL,
     `id_user` BIGINT NOT NULL,
-    `dashboard` BIGINT NOT NULL,
+    `dashboard` JSON NOT NULL,
     `action` ENUM(`create`, `update`, `delete`) NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
 
