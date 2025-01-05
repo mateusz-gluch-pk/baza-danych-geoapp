@@ -5,8 +5,6 @@ ALTER TABLE
 ALTER TABLE
     `leaderboards` ADD CONSTRAINT `leaderboards_id_teams_foreign` FOREIGN KEY(`id_teams`) REFERENCES `teams`(`id_teams`);
 ALTER TABLE
-    `user_logins` ADD CONSTRAINT `user_logins_id_users_foreign` FOREIGN KEY(`id_users`) REFERENCES `users`(`id_users`);
-ALTER TABLE
     `user_team_roles` ADD CONSTRAINT `user_team_roles_id_teams_foreign` FOREIGN KEY(`id_teams`) REFERENCES `teams`(`id_teams`);
 ALTER TABLE
     `user_team_roles` ADD CONSTRAINT `user_team_roles_id_roles_foreign` FOREIGN KEY(`id_roles`) REFERENCES `roles`(`id_roles`);
