@@ -13,6 +13,11 @@ CREATE TABLE `teams`(
 ALTER TABLE
     `teams` ADD INDEX `teams_deleted_at_index`(`deleted_at`);
 
+CREATE TABLE `roles`(
+    `id_roles` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE `user_team_roles`(
     `id_user_team_roles` BIGINT NOT NULL,
     `id_roles` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -24,3 +29,4 @@ ALTER TABLE
     `user_team_roles` ADD UNIQUE `user_team_roles_id_teams_unique`(`id_teams`);
 ALTER TABLE
     `user_team_roles` ADD UNIQUE `user_team_roles_id_users_unique`(`id_users`);
+

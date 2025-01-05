@@ -17,3 +17,11 @@ ALTER TABLE
     `users` ADD INDEX `users_account_type_index`(`account_type`);
 ALTER TABLE
     `users` ADD INDEX `users_deleted_at_index`(`deleted_at`);
+
+CREATE TABLE `user_logins`(
+    `id_user_logins` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_users` BIGINT NOT NULL,
+    `timestamp` TIMESTAMP NOT NULL
+);
+ALTER TABLE
+    `user_logins` ADD INDEX `user_logins_id_users_index`(`id_users`);

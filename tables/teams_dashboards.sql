@@ -13,7 +13,3 @@ ALTER TABLE
     `team_dashboards` ADD INDEX `team_dashboards_id_teams_index`(`id_teams`);
 ALTER TABLE
     `team_dashboards` ADD INDEX `team_dashboards_deleted_at_index`(`deleted_at`);
-CREATE TABLE `roles`(
-    `id_roles` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(255) NOT NULL
-);
