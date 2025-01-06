@@ -1,3 +1,11 @@
+DROP TRIGGER IF EXISTS `leaderboards_set_created_at`;
+DROP TRIGGER IF EXISTS `leaderboards_set_updated_at`;
+
+DROP PROCEDURE IF EXISTS `leaderboards_soft_delete`;
+
+DROP TABLE IF EXISTS `leaderboards`;
+DROP TABLE IF EXISTS `leaderboard_entries`;
+
 -- ====================================================================================================
 -- LEADERBOARDS
 -- TODO widoki leaderboardów 
@@ -35,23 +43,23 @@ CREATE TABLE `leaderboards`(
         CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
 
     CONSTRAINT `leaderboards_id_teams_foreign` 
-        FOREIGN KEY(`id_teams`) 
-        REFERENCES `teams`(`id_teams`)
+        FOREIGN KEY (`id_teams`) 
+        REFERENCES `teams` (`id_teams`)
         ON DELETE CASCADE,
 
     CONSTRAINT `leaderboards_created_by_foreign` 
-        FOREIGN KEY(`created_by`) 
-        REFERENCES `users`(`id_users`)
+        FOREIGN KEY (`created_by`) 
+        REFERENCES `users` (`id_users`)
         ON DELETE SET NULL,
 
     CONSTRAINT `leaderboards_updated_by_foreign` 
-        FOREIGN KEY(`updated_by`) 
-        REFERENCES `users`(`id_users`)
+        FOREIGN KEY (`updated_by`) 
+        REFERENCES `users` (`id_users`)
         ON DELETE SET NULL,
 
     CONSTRAINT `leaderboards_deleted_by_foreign` 
-        FOREIGN KEY(`deleted_by`) 
-        REFERENCES `users`(`id_users`)
+        FOREIGN KEY (`deleted_by`) 
+        REFERENCES `users` (`id_users`)
         ON DELETE SET NULL
 );
 
@@ -82,15 +90,50 @@ CREATE TABLE `leaderboard_entries`(
     UNIQUE (`id_users`,`id_training_types`,`date`),
 
     CONSTRAINT `leaderboard_entries_id_training_types_foreign` 
-        FOREIGN KEY(`id_training_types`) 
-        REFERENCES `training_types`(`id_training_types`),
+        FOREIGN KEY (`id_training_types`) 
+        REFERENCES `training_types` (`id_training_types`),
 
     CONSTRAINT `leaderboards_deleted_by_foreign` 
-        FOREIGN KEY(`deleted_by`) 
-        REFERENCES `users`(`id_users`)
+        FOREIGN KEY (`deleted_by`) 
+        REFERENCES `users` (`id_users`)
         ON DELETE CASCADE
 );
 
 ALTER TABLE `leaderboard_entries` ADD INDEX `leaderboard_entries_id_users_index`(`id_users`);
 ALTER TABLE `leaderboard_entries` ADD INDEX `leaderboard_entries_training_type_id_index`(`training_type_id`);
 ALTER TABLE `leaderboard_entries` ADD INDEX `leaderboard_entries_date_index`(`date`);
+
+
+DELIMITER //
+CREATE OR REPLACE PROCEDURE leaderboards_soft_delete(
+    IN `v_id_leaderboards` BIGINT UNSIGNED,
+    IN `v_deleted_by` BIGINT UNSIGNED
+)
+BEGIN 
+    UPDATE `leaderboards` 
+        SET `deleted_at` = NOW(), `deleted_by` = `v_deleted_by`
+        WHERE `id_leaderboards` = `v_id_leaderboards`;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `leaderboards_set_created_at` 
+    BEFORE INSERT ON `leaderboards` FOR EACH ROW
+    BEGIN
+        SET NEW.created_at = NOW();
+        SET NEW.updated_at = NOW();
+    END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `leaderboards_set_updated_at`
+    BEFORE UPDATE ON `leaderboards` FOR EACH ROW
+    BEGIN
+        IF NEW.deleted_at IS NULL THEN 
+            SET NEW.updated_at = NOW();
+        END IF; 
+    END;
+//
+DELIMITER ;
