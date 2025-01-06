@@ -26,7 +26,7 @@ CREATE TABLE `leaderboards`(
 
     PRIMARY KEY(`id_leaderboards`),
 
-    CONSTRAINT UNIQUE(`id_teams`,`priority`),
+    UNIQUE(`id_teams`,`priority`),
 
     CONSTRAINT `leaderboards_updated_ge_created_check`
         CHECK (`updated_at` >= `created_at`),
@@ -79,7 +79,7 @@ CREATE TABLE `leaderboard_entries`(
 
     PRIMARY KEY (`id_leaderboard_entries`),
 
-    CONSTRAINT UNIQUE (`id_users`,`id_training_types`,`date`),
+    UNIQUE (`id_users`,`id_training_types`,`date`),
 
     CONSTRAINT `leaderboard_entries_id_training_types_foreign` 
         FOREIGN KEY(`id_training_types`) 
