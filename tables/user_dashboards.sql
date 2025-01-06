@@ -1,6 +1,8 @@
 DROP TRIGGER IF EXISTS `user_dashboards_delete_log`;
 DROP TRIGGER IF EXISTS `user_dashboards_create_log`;
 DROP TRIGGER IF EXISTS `user_dashboards_update_log`;
+DROP TRIGGER IF EXISTS `user_dashboards_set_created_at`;
+DROP TRIGGER IF EXISTS `user_dashboards_set_updated_at`;
 
 DROP PROCEDURE IF EXISTS `user_dashboards_soft_delete`;
 DROP PROCEDURE IF EXISTS `user_dashboards_log_insert`;

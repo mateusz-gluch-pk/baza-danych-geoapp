@@ -1,3 +1,8 @@
+DROP TRIGGER IF EXISTS `trainings_set_created_at`;
+DROP TRIGGER IF EXISTS `trainings_set_updated_at`;
+
+DROP PROCEDURE IF EXISTS `trainings_soft_delete`;
+
 DROP TABLE IF EXISTS `training_localization`;
 DROP TABLE IF EXISTS `training_splits`;
 DROP TABLE IF EXISTS `trainings`;
@@ -5,7 +10,6 @@ DROP TABLE IF EXISTS `training_types`;
 
 -- ====================================================================================================
 -- TRAINING TYPES
--- done
 CREATE TABLE `training_types`(
     `id_training_types` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
@@ -19,7 +23,6 @@ CREATE TABLE `training_types`(
 
 -- ====================================================================================================
 -- TRAININGS
--- TODO constraint żeby end timestamp był większy niż start timestamp
 CREATE TABLE `trainings`(
     `id_trainings` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_users` BIGINT UNSIGNED NOT NULL,
@@ -110,3 +113,36 @@ CREATE TABLE `training_localization`(
 
 ALTER TABLE `training_localization` ADD INDEX `training_localization_id_trainings_index` (`id_trainings`);
 ALTER TABLE `training_localization` ADD INDEX `training_localization_timestamp_index` (`timestamp`);
+
+DELIMITER //
+CREATE OR REPLACE PROCEDURE trainings_soft_delete(
+    IN `v_id_trainings` BIGINT UNSIGNED
+)
+BEGIN 
+    UPDATE `trainings` 
+        SET `deleted_at` = NOW()
+        WHERE `id_trainings` = `v_id_trainings`;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `trainings_set_created_at` 
+    BEFORE INSERT ON `trainings` FOR EACH ROW
+    BEGIN
+        SET NEW.created_at = NOW();
+        SET NEW.updated_at = NOW();
+    END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `trainings_set_updated_at`
+    BEFORE UPDATE ON `trainings` FOR EACH ROW
+    BEGIN
+        IF NEW.deleted_at IS NULL THEN 
+            SET NEW.updated_at = NOW();
+        END IF; 
+    END;
+//
+DELIMITER ;

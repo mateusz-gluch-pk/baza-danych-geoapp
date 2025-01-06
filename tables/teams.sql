@@ -1,3 +1,15 @@
+DROP TRIGGER IF EXISTS `teams_set_created_at`;
+DROP TRIGGER IF EXISTS `teams_set_updated_at`;
+DROP TRIGGER IF EXISTS `user_team_roles_set_created_at`;
+DROP TRIGGER IF EXISTS `user_team_roles_set_updated_at`;
+
+DROP PROCEDURE IF EXISTS `teams_soft_delete`;
+DROP PROCEDURE IF EXISTS `user_team_roles_soft_delete`;
+
+DROP TABLE IF EXISTS `user_team_roles`;
+DROP TABLE IF EXISTS `teams`;
+DROP TABLE IF EXISTS `roles`;
+
 -- ====================================================================================================
 -- TEAMS 
 -- TODO: WYSZUKIWANIE PO NAZWIE TEAMU - INDEX FULL TEXT
@@ -7,11 +19,11 @@ CREATE TABLE `teams`(
     `name` VARCHAR(255) NOT NULL,
 
     `created_at` TIMESTAMP NOT NULL,
-    `created_by` BIGINT NULL,
+    `created_by` BIGINT UNSIGNED NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    `updated_by` BIGINT NULL,
+    `updated_by` BIGINT UNSIGNED NULL,
     `deleted_at` TIMESTAMP NULL INVISIBLE,
-    `deleted_by` BIGINT NULL INVISIBLE,
+    `deleted_by` BIGINT UNSIGNED NULL INVISIBLE,
 
     PRIMARY KEY (`id_teams`),
 
@@ -42,26 +54,27 @@ ALTER TABLE `teams` ADD INDEX `teams_deleted_at_index`(`deleted_at`);
 -- ====================================================================================================
 -- ROLES
 CREATE TABLE `roles`(
-    `id_roles` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(255) NOT NULL
+    `id_roles` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+
+	 PRIMARY KEY (`id_roles`)    
 );
 
 -- ====================================================================================================
 -- USER TEAM ROLES
--- TODO INDEX DELETED AT
+-- TODO INDEX DELETED AT 
 CREATE TABLE `user_team_roles`(
     `id_user_team_roles` BIGINT NOT NULL,
     `id_roles` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_teams` BIGINT NOT NULL,
-    `id_users` BIGINT NOT NULL,
+    `id_teams` BIGINT UNSIGNED NOT NULL,
+    `id_users` BIGINT UNSIGNED NOT NULL,
 
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
     `deleted_at` TIMESTAMP NULL INVISIBLE,
 
-    PRIMARY KEY(`id_user_team_roles`),
-
-    UNIQUE(`id_teams`, `id_users`),
+    PRIMARY KEY (`id_user_team_roles`),
+    UNIQUE INDEX (`id_teams`, `id_users`),
 
     CONSTRAINT `user_team_roles_updated_ge_created_check`
         CHECK (`updated_at` >= `created_at`),
@@ -84,6 +97,69 @@ CREATE TABLE `user_team_roles`(
         ON DELETE CASCADE
 );
 
-ALTER TABLE `user_team_roles` ADD UNIQUE `user_team_roles_id_teams_unique`(`id_teams`);
-ALTER TABLE `user_team_roles` ADD UNIQUE `user_team_roles_id_users_unique`(`id_users`);
+DELIMITER //
+CREATE OR REPLACE PROCEDURE teams_soft_delete(
+    IN `v_id_teams` BIGINT UNSIGNED,
+    IN `v_deleted_by` BIGINT UNSIGNED
+)
+BEGIN 
+    UPDATE `teams` 
+        SET `deleted_at` = NOW(), `deleted_by` = `v_deleted_by`
+        WHERE `id_teams` = `v_id_teams`;
+END;
+//
+DELIMITER ;
 
+DELIMITER //
+CREATE OR REPLACE TRIGGER `teams_set_created_at` 
+    BEFORE INSERT ON `teams` FOR EACH ROW
+    BEGIN
+        SET NEW.created_at = NOW();
+        SET NEW.updated_at = NOW();
+    END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `teams_set_updated_at`
+    BEFORE UPDATE ON `teams` FOR EACH ROW
+    BEGIN
+        IF NEW.deleted_at IS NULL THEN 
+            SET NEW.updated_at = NOW();
+        END IF; 
+    END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE PROCEDURE user_team_roles_soft_delete(
+    IN `v_id_user_team_roles` BIGINT UNSIGNED
+)
+BEGIN 
+    UPDATE `user_team_roles` 
+        SET `deleted_at` = NOW() 
+        WHERE `id_user_team_roles` = `v_id_user_team_roles`;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `user_team_roles_set_created_at` 
+    BEFORE INSERT ON `user_team_roles` FOR EACH ROW
+    BEGIN
+        SET NEW.created_at = NOW();
+        SET NEW.updated_at = NOW();
+    END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `user_team_roles_set_updated_at`
+    BEFORE UPDATE ON `user_team_roles` FOR EACH ROW
+    BEGIN
+        IF NEW.deleted_at IS NULL THEN 
+            SET NEW.updated_at = NOW();
+        END IF; 
+    END;
+//
+DELIMITER ;
