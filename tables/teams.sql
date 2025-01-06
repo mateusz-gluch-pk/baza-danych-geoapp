@@ -1,6 +1,6 @@
 -- ====================================================================================================
 -- TEAMS 
--- WYSZUKIWANIE PO NAZWIE TEAMU - INDEX FULL TEXT
+-- TODO: WYSZUKIWANIE PO NAZWIE TEAMU - INDEX FULL TEXT
 -- TODO: procedura soft delete 
 CREATE TABLE `teams`(
     `id_teams` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

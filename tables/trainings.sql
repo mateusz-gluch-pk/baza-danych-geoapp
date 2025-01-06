@@ -38,6 +38,9 @@ CREATE TABLE `trainings`(
 
     PRIMARY KEY(`id_trainings`),
 
+    CONSTRAINT `trainings_end_gt_start_check` 
+        CHECK (`start_timestamp` < `end_timestamp`),
+
     CONSTRAINT `trainings_id_training_types_foreign` 
         FOREIGN KEY(`id_training_types`) 
         REFERENCES `training_types`(`id_training_types`),
