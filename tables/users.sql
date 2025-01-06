@@ -14,7 +14,13 @@ CREATE TABLE `users`(
     `updated_at` TIMESTAMP NOT NULL,
     `deleted_at` TIMESTAMP,
 
-    PRIMARY KEY(`id_users`)
+    PRIMARY KEY(`id_users`),
+
+    CONSTRAINT `users_updated_ge_created_check`
+        CHECK (`updated_at` >= `created_at`),
+
+    CONSTRAINT `users_deleted_ge_created_check`
+        CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
 );
 
 ALTER TABLE `users` ADD INDEX `users_account_type_index`(`account_type`);

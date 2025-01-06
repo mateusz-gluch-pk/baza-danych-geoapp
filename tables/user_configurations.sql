@@ -10,6 +10,12 @@ CREATE TABLE `user_configurations`(
 
     PRIMARY KEY (`id_user_configurations`),
 
+    CONSTRAINT `user_configurations_updated_ge_created_check`
+        CHECK (`updated_at` >= `created_at`),
+
+    CONSTRAINT `user_configurations_deleted_ge_created_check`
+        CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
+
     CONSTRAINT `user_configurations_id_users_foreign` 
         FOREIGN KEY(`id_users`) 
         REFERENCES `users`(`id_users`)

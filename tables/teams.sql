@@ -15,6 +15,12 @@ CREATE TABLE `teams`(
 
     PRIMARY KEY (`id_teams`),
 
+    CONSTRAINT `teams_updated_ge_created_check`
+        CHECK (`updated_at` >= `created_at`),
+
+    CONSTRAINT `teams_deleted_ge_created_check`
+        CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
+
     CONSTRAINT `teams_created_by_foreign` 
         FOREIGN KEY(`created_by`) 
         REFERENCES `users`(`id_users`)
@@ -56,6 +62,12 @@ CREATE TABLE `user_team_roles`(
     PRIMARY KEY(`id_user_team_roles`),
 
     CONSTRAINT UNIQUE(`id_teams`, `id_users`),
+
+    CONSTRAINT `user_team_roles_updated_ge_created_check`
+        CHECK (`updated_at` >= `created_at`),
+
+    CONSTRAINT `user_team_roles_deleted_ge_created_check`
+        CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
 
     CONSTRAINT `user_team_roles_id_roles_foreign` 
         FOREIGN KEY(`id_roles`) 
