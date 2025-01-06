@@ -61,7 +61,7 @@ CREATE TABLE `user_team_roles`(
 
     PRIMARY KEY(`id_user_team_roles`),
 
-    CONSTRAINT UNIQUE(`id_teams`, `id_users`),
+    UNIQUE(`id_teams`, `id_users`),
 
     CONSTRAINT `user_team_roles_updated_ge_created_check`
         CHECK (`updated_at` >= `created_at`),
