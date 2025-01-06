@@ -54,7 +54,7 @@ CREATE TABLE `teams_dashboards_log`(
     `id_users` BIGINT NOT NULL,
 
     `dashboard` BIGINT NOT NULL,
-    `action` ENUM(`create`, `update`, `delete`) NOT NULL,
+    `action` ENUM('create', 'update', 'delete') NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id_teams_dashboards_log`),

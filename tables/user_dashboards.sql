@@ -1,11 +1,22 @@
+DROP TRIGGER IF EXISTS `user_dashboards_delete_log`;
+DROP TRIGGER IF EXISTS `user_dashboards_create_log`;
+DROP TRIGGER IF EXISTS `user_dashboards_update_log`;
+
+DROP PROCEDURE IF EXISTS `user_dashboards_soft_delete`;
+DROP PROCEDURE IF EXISTS `user_dashboards_log_insert`;
+
+DROP TABLE IF EXISTS `user_dashboards_log`;
+DROP TABLE IF EXISTS `user_dashboards`;
+
+
 -- ====================================================================================================
 -- USER DASHBOARDS
 CREATE TABLE `user_dashboards`(
     `id_user_dashboards` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_users` BIGINT NOT NULL,
+    `id_users` BIGINT UNSIGNED NOT NULL,
     `dashboard` JSON NOT NULL,
-    `created_at` TIMESTAMP NULL,
-    `updated_at` TIMESTAMP NULL,
+    `created_at` TIMESTAMP NOT NULL,
+    `updated_at` TIMESTAMP NOT NULL,
     `deleted_at` TIMESTAMP NULL INVISIBLE,
 
     PRIMARY KEY (`id_user_dashboards`),
@@ -31,20 +42,20 @@ ALTER TABLE `user_dashboards` ADD INDEX `user_dashboards_deleted_at_index`(`dele
 CREATE TABLE `user_dashboards_log`(
     `id_user_dashboards_log` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_user_dashboards` BIGINT UNSIGNED NOT NULL,
-    `id_user` BIGINT UNSIGNED NOT NULL,
-    `action` ENUM(`create`, `update`, `delete`) NOT NULL,
+    `id_users` BIGINT UNSIGNED NOT NULL,
+    `action` ENUM('create', 'update', 'delete') NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id_user_dashboards_log`),
 
     CONSTRAINT `user_dashboards_log_id_user_dashboards_foreign` 
         FOREIGN KEY(`id_user_dashboards`) 
-        REFERENCES `user_dashboards`(`id_user_dashboards`)
+        REFERENCES `user_dashboards` (`id_user_dashboards`)
         ON DELETE CASCADE,
 
     CONSTRAINT `user_dashboards_log_id_user_foreign` 
-        FOREIGN KEY(`id_user`) 
-        REFERENCES `users`(`id_users`)
+        FOREIGN KEY (`id_users`) 
+        REFERENCES `users` (`id_users`)
         ON DELETE CASCADE
 );
 
@@ -52,20 +63,14 @@ DELIMITER //
 CREATE OR REPLACE PROCEDURE user_dashboards_log_insert(
     IN `v_id_user_dashboards` BIGINT UNSIGNED,
     IN `v_id_users` BIGINT UNSIGNED,
-    IN `v_action` ENUM(`create`, `update`, `delete`),
+    IN `v_action` ENUM('create', 'update', 'delete')
 )
 BEGIN
-    INSERT INTO user_dasboards_log (
-        `id_user_dashboards`,
-        `id_users`,
-        `action`,
-        `timestamp`
+    INSERT INTO user_dashboards_log (
+    	`id_user_dashboards`, `id_users`, `action`, `timestamp`
     ) VALUES (
-        `v_id_user_dashboards`,
-        `v_id_users`,
-        `v_action`,
-        NOW()
-    )
+        `v_id_user_dashboards`, `v_id_users`, `v_action`, NOW()
+    );
 END;
 //
 DELIMITER ;
@@ -110,7 +115,7 @@ CREATE OR REPLACE TRIGGER `user_dashboards_create_log`
         CALL user_dashboards_log_insert(
             NEW.id_user_dashboards,
             NEW.id_users,
-            `create`
+            'create'
         );
     END;
 //
@@ -123,7 +128,7 @@ CREATE OR REPLACE TRIGGER `user_dashboards_update_log`
         CALL user_dashboards_log_insert(
             NEW.id_user_dashboards,
             NEW.id_users,
-            `update`
+            'update'
         );
     END;      
 //
@@ -136,7 +141,7 @@ CREATE OR REPLACE TRIGGER `user_dashboards_delete_log`
         CALL user_dashboards_log_insert(
             OLD.id_user_dashboards,
             OLD.id_users,
-            `delete`
+            'delete'
         );
     END;
 //
