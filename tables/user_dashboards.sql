@@ -10,6 +10,12 @@ CREATE TABLE `user_dashboards`(
 
     PRIMARY KEY (`id_user_dashboards`),
 
+    CONSTRAINT `user_dashboards_updated_ge_created_check`
+        CHECK (`updated_at` >= `created_at`),
+
+    CONSTRAINT `user_dashboards_deleted_ge_created_check`
+        CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
+
     CONSTRAINT `user_dashboards_id_users_foreign` 
         FOREIGN KEY(`id_users`) 
         REFERENCES `users`(`id_users`)

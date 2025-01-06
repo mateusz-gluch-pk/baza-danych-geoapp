@@ -23,12 +23,12 @@ CREATE TABLE `trainings`(
     `start_timestamp` BIGINT NOT NULL,
     `end_timestamp` BIGINT NULL,
 
-    `distance_m` DOUBLE NULL,
-    `max_velocity_m_s` DOUBLE NULL,
-    `mean_velocity_m_s` DOUBLE NULL,
-    `mean_pace_s_m` DOUBLE NULL,
-    `calories_kcal` DOUBLE NULL,
-    `elevation_m` DOUBLE NULL,
+    `distance_m` DOUBLE NULL CHECK (`distance_m` > 0),
+    `max_velocity_m_s` DOUBLE NULL CHECK (`max_velocity_m_s` > 0),
+    `mean_velocity_m_s` DOUBLE NULL CHECK (`mean_velocity_m_s` > 0),
+    `mean_pace_s_m` DOUBLE NULL CHECK (`mean_pace_s_m` > 0),
+    `calories_kcal` DOUBLE NULL CHECK (`calories_kcal` > 0),
+    `elevation_m` DOUBLE NULL CHECK (`elevation_m` > 0),
     `altitude_max` DOUBLE NULL,
     `altitude_min` DOUBLE NULL,
 
@@ -40,6 +40,12 @@ CREATE TABLE `trainings`(
 
     CONSTRAINT `trainings_end_gt_start_check` 
         CHECK (`start_timestamp` < `end_timestamp`),
+
+    CONSTRAINT `trainings_updated_ge_created_check`
+        CHECK (`updated_at` >= `created_at`),
+
+    CONSTRAINT `trainings_deleted_ge_created_check`
+        CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
 
     CONSTRAINT `trainings_id_training_types_foreign` 
         FOREIGN KEY(`id_training_types`) 

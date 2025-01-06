@@ -14,6 +14,12 @@ CREATE TABLE `team_dashboards`(
 
     PRIMARY KEY (`id_teams_dashboards`),
 
+    CONSTRAINT `teams_dashboards_updated_ge_created_check`
+        CHECK (`updated_at` >= `created_at`),
+
+    CONSTRAINT `teams_dashboards_deleted_ge_created_check`
+        CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
+
     CONSTRAINT `teams_dashboards_id_teams_foreign` 
         FOREIGN KEY(`id_teams`) 
         REFERENCES `teams`(`id_teams`)

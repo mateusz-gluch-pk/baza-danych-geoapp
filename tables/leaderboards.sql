@@ -5,8 +5,8 @@ CREATE TABLE `leaderboards`(
     `id_leaderboards` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_teams` BIGINT NOT NULL,
 
-    `priority` BIGINT NOT NULL,
-    `period_days` BIGINT NOT NULL,
+    `priority` BIGINT NOT NULL CHECK (`priority` > 0),
+    `period_days` BIGINT NOT NULL CHECK (`period_days` > 0),
     `criterion` ENUM(
         `training_count`, 
         `training_time`, 
@@ -28,7 +28,13 @@ CREATE TABLE `leaderboards`(
 
     CONSTRAINT UNIQUE(`id_teams`,`priority`),
 
-    CONSTRAINT `teams_dashboards_id_teams_foreign` 
+    CONSTRAINT `leaderboards_updated_ge_created_check`
+        CHECK (`updated_at` >= `created_at`),
+
+    CONSTRAINT `leaderboards_deleted_ge_created_check`
+        CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
+
+    CONSTRAINT `leaderboards_id_teams_foreign` 
         FOREIGN KEY(`id_teams`) 
         REFERENCES `teams`(`id_teams`)
         ON DELETE CASCADE,
@@ -63,13 +69,13 @@ CREATE TABLE `leaderboard_entries`(
 
     `date` DATE NOT NULL,
 
-    `training_count` BIGINT NOT NULL,
-    `training_time` BIGINT NOT NULL,
-    `length_max_km` DOUBLE NULL,
-    `length_sum_km` DOUBLE NULL,
-    `calories_sum_km` DOUBLE NULL,
-    `velocity_max_m_s` DOUBLE NULL,
-    `velocity_mean_m_s` DOUBLE NULL,
+    `training_count` BIGINT NOT NULL CHECK (`training_count` > 0),
+    `training_time_s` BIGINT NOT NULL CHECK (`training_time_s` > 0),
+    `distance_max_m` DOUBLE NULL CHECK (`distance_max_m` > 0),
+    `distance_sum_m` DOUBLE NULL CHECK (`distance_sum_m` > 0),
+    `calories_sum` DOUBLE NULL CHECK (`calories_sum` > 0),
+    `velocity_max_m_s` DOUBLE NULL CHECK (`velocity_max_m_s` > 0),
+    `velocity_mean_m_s` DOUBLE NULL CHECK (`velocity_mean_m_s` > 0),
 
     PRIMARY KEY (`id_leaderboard_entries`),
 
