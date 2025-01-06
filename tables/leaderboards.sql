@@ -21,8 +21,8 @@ CREATE TABLE `leaderboards`(
     `created_by` BIGINT NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
     `updated_by` BIGINT NOT NULL,
-    `deleted_at` TIMESTAMP NULL,
-    `deleted_by` BIGINT NULL,
+    `deleted_at` TIMESTAMP NULL INVISIBLE,
+    `deleted_by` BIGINT NULL INVISIBLE,
 
     PRIMARY KEY(`id_leaderboards`),
 

@@ -10,8 +10,8 @@ CREATE TABLE `teams`(
     `created_by` BIGINT NULL,
     `updated_at` TIMESTAMP NOT NULL,
     `updated_by` BIGINT NULL,
-    `deleted_at` TIMESTAMP NULL,
-    `deleted_by` BIGINT NULL
+    `deleted_at` TIMESTAMP NULL INVISIBLE,
+    `deleted_by` BIGINT NULL INVISIBLE,
 
     PRIMARY KEY (`id_teams`),
 
@@ -57,7 +57,7 @@ CREATE TABLE `user_team_roles`(
 
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    `deleted_at` TIMESTAMP NULL,
+    `deleted_at` TIMESTAMP NULL INVISIBLE,
 
     PRIMARY KEY(`id_user_team_roles`),
 

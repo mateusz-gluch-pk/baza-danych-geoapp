@@ -12,7 +12,7 @@ CREATE TABLE `users`(
     `account_type` ENUM('free', 'premium') NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    `deleted_at` TIMESTAMP,
+    `deleted_at` TIMESTAMP INVISIBLE,
 
     PRIMARY KEY(`id_users`),
 

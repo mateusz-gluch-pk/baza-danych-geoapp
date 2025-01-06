@@ -9,8 +9,8 @@ CREATE TABLE `team_dashboards`(
     `created_by` BIGINT NULL,
     `updated_at` TIMESTAMP NOT NULL,
     `updated_by` BIGINT NULL,
-    `deleted_at` TIMESTAMP NULL,
-    `deleted_by` BIGINT NULL
+    `deleted_at` TIMESTAMP NULL INVISIBLE,
+    `deleted_by` BIGINT NULL INVISIBLE,
 
     PRIMARY KEY (`id_teams_dashboards`),
 

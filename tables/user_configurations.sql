@@ -6,7 +6,7 @@ CREATE TABLE `user_configurations`(
     `configuration` JSON NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    `deleted_at` TIMESTAMP NULL,
+    `deleted_at` TIMESTAMP NULL INVISIBLE,
 
     PRIMARY KEY (`id_user_configurations`),
 
