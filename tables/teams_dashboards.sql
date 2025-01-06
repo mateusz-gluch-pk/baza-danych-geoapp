@@ -1,28 +1,28 @@
-DROP TRIGGER IF EXISTS `team_configurations_delete_log`;
-DROP TRIGGER IF EXISTS `team_configurations_create_log`;
-DROP TRIGGER IF EXISTS `team_configurations_update_log`;
-DROP TRIGGER IF EXISTS `team_configurations_set_created_at`;
-DROP TRIGGER IF EXISTS `team_configurations_set_updated_at`;
+DROP TRIGGER IF EXISTS `team_dashboards_delete_log`;
+DROP TRIGGER IF EXISTS `team_dashboards_create_log`;
+DROP TRIGGER IF EXISTS `team_dashboards_update_log`;
+DROP TRIGGER IF EXISTS `team_dashboards_set_created_at`;
+DROP TRIGGER IF EXISTS `team_dashboards_set_updated_at`;
 
-DROP PROCEDURE IF EXISTS `team_configurations_soft_delete`;
-DROP PROCEDURE IF EXISTS `team_configurations_log_insert`;
+DROP PROCEDURE IF EXISTS `team_dashboards_soft_delete`;
+DROP PROCEDURE IF EXISTS `team_dashboards_log_insert`;
 
-DROP TABLE IF EXISTS `team_configurations_log`;
-DROP TABLE IF EXISTS `team_configurations`;
+DROP TABLE IF EXISTS `team_dashboards_log`;
+DROP TABLE IF EXISTS `team_dashboards`;
 
 -- ====================================================================================================
 -- TEAMS DASHBOARDS
 CREATE TABLE `team_dashboards`(
     `id_team_dashboards` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_teams` BIGINT NOT NULL,
+    `id_teams` BIGINT UNSIGNED NOT NULL,
     `dashboard` JSON NOT NULL,
 
     `created_at` TIMESTAMP NOT NULL,
-    `created_by` BIGINT NULL,
+    `created_by` BIGINT UNSIGNED NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    `updated_by` BIGINT NULL,
+    `updated_by` BIGINT UNSIGNED NULL,
     `deleted_at` TIMESTAMP NULL INVISIBLE,
-    `deleted_by` BIGINT NULL INVISIBLE,
+    `deleted_by` BIGINT UNSIGNED NULL INVISIBLE,
 
     PRIMARY KEY (`id_team_dashboards`),
 
@@ -33,23 +33,23 @@ CREATE TABLE `team_dashboards`(
         CHECK ((`deleted_at` >= `created_at`) OR (`deleted_at` IS NULL)),
 
     CONSTRAINT `team_dashboards_id_teams_foreign` 
-        FOREIGN KEY(`id_teams`) 
-        REFERENCES `teams`(`id_teams`)
+        FOREIGN KEY (`id_teams`) 
+        REFERENCES `teams` (`id_teams`)
         ON DELETE CASCADE,
 
     CONSTRAINT `team_dashboards_created_by_foreign` 
-        FOREIGN KEY(`created_by`) 
-        REFERENCES `users`(`id_users`)
+        FOREIGN KEY (`created_by`) 
+        REFERENCES `users` (`id_users`)
         ON DELETE SET NULL,
 
     CONSTRAINT `team_dashboards_updated_by_foreign` 
-        FOREIGN KEY(`updated_by`) 
-        REFERENCES `users`(`id_users`)
+        FOREIGN KEY (`updated_by`) 
+        REFERENCES `users` (`id_users`)
         ON DELETE SET NULL,
 
     CONSTRAINT `team_dashboards_deleted_by_foreign` 
-        FOREIGN KEY(`deleted_by`) 
-        REFERENCES `users`(`id_users`)
+        FOREIGN KEY (`deleted_by`) 
+        REFERENCES `users` (`id_users`)
         ON DELETE SET NULL
 );
 
@@ -61,9 +61,9 @@ ALTER TABLE `team_dashboards` ADD INDEX `team_dashboards_deleted_at_index`(`dele
 -- TODO records created after trigger
 CREATE TABLE `team_dashboards_log`(
     `id_team_dashboards_log` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_team_dashboards` BIGINT NOT NULL,
-    `id_teams` BIGINT NOT NULL,
-    `id_users` BIGINT NOT NULL,
+    `id_team_dashboards` BIGINT UNSIGNED NOT NULL,
+    `id_teams` BIGINT UNSIGNED NOT NULL,
+    `id_users` BIGINT UNSIGNED NULL,
 
     `action` ENUM('create', 'update', 'delete') NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
@@ -71,18 +71,18 @@ CREATE TABLE `team_dashboards_log`(
     PRIMARY KEY (`id_team_dashboards_log`),
 
     CONSTRAINT `team_dashboards_log_id_team_dashboards_foreign` 
-        FOREIGN KEY(`id_team_dashboards`) 
-        REFERENCES `team_dashboards`(`id_team_dashboards`)
+        FOREIGN KEY (`id_team_dashboards`) 
+        REFERENCES `team_dashboards` (`id_team_dashboards`)
+        ON DELETE CASCADE,
+ 
+    CONSTRAINT `team_dashboards_log_id_teams_foreign` 
+        FOREIGN KEY (`id_teams`) 
+        REFERENCES `teams` (`id_teams`)
         ON DELETE CASCADE,
 
-    CONSTRAINT `team_dashboards_log_id_user_foreign` 
-        FOREIGN KEY(`id_user`) 
-        REFERENCES `users`(`id_users`)
-        ON DELETE CASCADE,
-
-    CONSTRAINT `team_dashboards_id_users_foreign` 
-        FOREIGN KEY(`id_users`) 
-        REFERENCES `users`(`id_users`)
+    CONSTRAINT `team_dashboards_log_id_users_foreign` 
+        FOREIGN KEY (`id_users`)
+        REFERENCES `users` (`id_users`)
         ON DELETE SET NULL
 );
 
@@ -144,7 +144,7 @@ CREATE OR REPLACE TRIGGER `team_dashboards_create_log`
         CALL team_dashboards_log_insert(
             NEW.id_team_dashboards,
             NEW.id_teams,
-            NEW.id_users,
+            NEW.created_by,
             'create'
         );
     END;
@@ -158,7 +158,7 @@ CREATE OR REPLACE TRIGGER `team_dashboards_update_log`
         CALL team_dashboards_log_insert(
             NEW.id_team_dashboards,
             NEW.id_teams,
-            NEW.id_users,
+            NEW.updated_by,
             'update'
         );
     END;      
@@ -172,7 +172,7 @@ CREATE OR REPLACE TRIGGER `team_dashboards_delete_log`
         CALL team_dashboards_log_insert(
             OLD.id_team_dashboards,
             OLD.id_teams,
-            OLD.id_users,
+            OLD.deleted_by,
             'delete'
         );
     END;

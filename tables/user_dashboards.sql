@@ -10,7 +10,6 @@ DROP PROCEDURE IF EXISTS `user_dashboards_log_insert`;
 DROP TABLE IF EXISTS `user_dashboards_log`;
 DROP TABLE IF EXISTS `user_dashboards`;
 
-
 -- ====================================================================================================
 -- USER DASHBOARDS
 CREATE TABLE `user_dashboards`(
@@ -31,7 +30,7 @@ CREATE TABLE `user_dashboards`(
 
     CONSTRAINT `user_dashboards_id_users_foreign` 
         FOREIGN KEY(`id_users`) 
-        REFERENCES `users`(`id_users`)
+        REFERENCES `users` (`id_users`)
         ON DELETE CASCADE
 );
 

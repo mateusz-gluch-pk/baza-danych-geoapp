@@ -11,26 +11,26 @@ DROP TABLE IF EXISTS `leaderboard_entries`;
 -- TODO widoki leaderboardów 
 CREATE TABLE `leaderboards`(
     `id_leaderboards` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_teams` BIGINT NOT NULL,
+    `id_teams` BIGINT UNSIGNED NOT NULL,
 
     `priority` BIGINT NOT NULL CHECK (`priority` > 0),
     `period_days` BIGINT NOT NULL CHECK (`period_days` > 0),
     `criterion` ENUM(
-        `training_count`, 
-        `training_time`, 
-        `length_max_km`, 
-        `length_sum_km`, 
-        `calories_sum_km`, 
-        `velocity_max_m_s`, 
-        `velocity_mean_m_s`
+        'training_count', 
+        'training_time', 
+        'length_max_km', 
+        'length_sum_km', 
+        'calories_sum_km', 
+        'velocity_max_m_s', 
+        'velocity_mean_m_s'
     ) NOT NULL,
     
     `created_at` TIMESTAMP NOT NULL,
-    `created_by` BIGINT NOT NULL,
+    `created_by` BIGINT UNSIGNED NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    `updated_by` BIGINT NOT NULL,
+    `updated_by` BIGINT UNSIGNED NULL,
     `deleted_at` TIMESTAMP NULL INVISIBLE,
-    `deleted_by` BIGINT NULL INVISIBLE,
+    `deleted_by` BIGINT UNSIGNED NULL INVISIBLE,
 
     PRIMARY KEY(`id_leaderboards`),
 
@@ -58,7 +58,7 @@ CREATE TABLE `leaderboards`(
         ON DELETE SET NULL,
 
     CONSTRAINT `leaderboards_deleted_by_foreign` 
-        FOREIGN KEY (`deleted_by`) 
+        FOREIGN KEY (`deleted_by`)
         REFERENCES `users` (`id_users`)
         ON DELETE SET NULL
 );
@@ -72,8 +72,8 @@ ALTER TABLE `leaderboards` ADD INDEX `leaderboards_priority_index`(`priority`);
 -- TODO rekordy tworzone po dziennym evencie
 CREATE TABLE `leaderboard_entries`(
     `id_leaderboard_entries` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_users` BIGINT NOT NULL,
-    `id_training_types` BIGINT NOT NULL,
+    `id_users` BIGINT UNSIGNED NOT NULL,
+    `id_training_types` BIGINT UNSIGNED NOT NULL,
 
     `date` DATE NOT NULL,
 
@@ -93,14 +93,14 @@ CREATE TABLE `leaderboard_entries`(
         FOREIGN KEY (`id_training_types`) 
         REFERENCES `training_types` (`id_training_types`),
 
-    CONSTRAINT `leaderboards_deleted_by_foreign` 
-        FOREIGN KEY (`deleted_by`) 
+    CONSTRAINT `leaderboard_entries_id_users_foreign` 
+        FOREIGN KEY (`id_users`) 
         REFERENCES `users` (`id_users`)
         ON DELETE CASCADE
 );
 
 ALTER TABLE `leaderboard_entries` ADD INDEX `leaderboard_entries_id_users_index`(`id_users`);
-ALTER TABLE `leaderboard_entries` ADD INDEX `leaderboard_entries_training_type_id_index`(`training_type_id`);
+ALTER TABLE `leaderboard_entries` ADD INDEX `leaderboard_entries_id_training_types_index`(`id_training_types`);
 ALTER TABLE `leaderboard_entries` ADD INDEX `leaderboard_entries_date_index`(`date`);
 
 
