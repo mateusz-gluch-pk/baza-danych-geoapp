@@ -33,7 +33,7 @@ CREATE TABLE `user_configurations_log`(
     `id_user_configurations` BIGINT NOT NULL,
     `id_user` BIGINT NOT NULL,
     `configuration` JSON NOT NULL,
-    `action` ENUM(`create`, `update`, `delete`) NOT NULL,
+    `action` ENUM('create', 'update', 'delete') NOT NULL,
     `timestamp` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id_user_configurations_log`),
