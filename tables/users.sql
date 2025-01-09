@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `users`(
     `account_type` ENUM('free', 'premium') NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    `deleted_at` TIMESTAMP INVISIBLE,
+    `deleted_at` TIMESTAMP NULL INVISIBLE,
 
     PRIMARY KEY(`id_users`),
 

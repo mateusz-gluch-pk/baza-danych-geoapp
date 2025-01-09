@@ -31,14 +31,14 @@ CREATE TABLE `trainings`(
     `start_timestamp` BIGINT NOT NULL,
     `end_timestamp` BIGINT NULL,
 
-    `distance_m` DOUBLE NULL CHECK (`distance_m` > 0),
-    `max_velocity_m_s` DOUBLE NULL CHECK (`max_velocity_m_s` > 0),
-    `mean_velocity_m_s` DOUBLE NULL CHECK (`mean_velocity_m_s` > 0),
-    `mean_pace_s_m` DOUBLE NULL CHECK (`mean_pace_s_m` > 0),
-    `calories_kcal` DOUBLE NULL CHECK (`calories_kcal` > 0),
-    `elevation_m` DOUBLE NULL CHECK (`elevation_m` > 0),
-    `altitude_max` DOUBLE NULL,
-    `altitude_min` DOUBLE NULL,
+    `distance_m` DOUBLE NULL DEFAULT 0 CHECK (`distance_m` >= 0),
+    `max_velocity_m_s` DOUBLE NULL DEFAULT 0 CHECK (`max_velocity_m_s` >= 0),
+    `mean_velocity_m_s` DOUBLE NULL DEFAULT 0 CHECK (`mean_velocity_m_s` >= 0),
+    `mean_pace_s_m` DOUBLE NULL DEFAULT 0 CHECK (`mean_pace_s_m` >= 0),
+    `calories_kcal` DOUBLE NULL DEFAULT 0 CHECK (`calories_kcal` >= 0),
+    `elevation_m` DOUBLE NULL DEFAULT 0 CHECK (`elevation_m` >= 0),
+    `altitude_max` DOUBLE NULL DEFAULT 0,
+    `altitude_min` DOUBLE NULL DEFAULT 0,
 
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
@@ -98,18 +98,84 @@ ALTER TABLE `training_splits` ADD INDEX `training_splits_id_trainings_index`(`id
 -- TODO partycjonowanie - co dzień
 -- TODO procedura tworzenia nowej pratycji jeśli na dany dzień jeszcze nie ma!
 CREATE TABLE `training_localization`(
-    `id_training_localization` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_training_localization` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `id_trainings` BIGINT UNSIGNED NOT NULL,
+    `training_day_part` DATE NULL INVISIBLE DEFAULT '1970-01-01',
     `timestamp` BIGINT NOT NULL,
-    `location_lat_lng` POINT NOT NULL,
+    `location_lat` DOUBLE NOT NULL,
+    `location_lng` DOUBLE NOT NULL,
     `altitude_m` DOUBLE NOT NULL,
     `velocity_m_s` DOUBLE NOT NULL,
+    
+    PRIMARY KEY(`id_training_localization`, `training_day_part`)
+    
+--     CONSTRAINT `training_localization_id_trainings_foreign` 
+--         FOREIGN KEY (`id_trainings`)
+--         REFERENCES `trainings` (`id_trainings`)
+--         ON DELETE CASCADE
+)
+PARTITION BY KEY(`training_day_part`) 
+PARTITIONS 365;
 
-    CONSTRAINT `training_localization_id_trainings_foreign` 
-        FOREIGN KEY (`id_trainings`)
-        REFERENCES `trainings` (`id_trainings`)
-        ON DELETE CASCADE
-);
+-- automatic partition assignment
+DELIMITER //
+CREATE OR REPLACE FUNCTION training_day(
+	`v_id_trainings` BIGINT UNSIGNED
+) RETURNS DATE READS SQL DATA
+BEGIN
+	DECLARE ts BIGINT;
+	SELECT `start_timestamp` 
+		FROM `trainings` 
+		WHERE `id_trainings` = `v_id_trainings`
+		LIMIT 1 INTO ts;
+
+	RETURN CAST(TIMESTAMPADD(SECOND,ts,'1970-01-01') AS DATE);
+END;
+//
+DELIMITER ;
+
+-- foreign key implementation using trigger and user fcn
+DELIMITER //
+CREATE OR REPLACE FUNCTION training_exists(
+	`v_id_trainings` BIGINT UNSIGNED
+) RETURNS BOOL READS SQL DATA
+BEGIN
+	DECLARE v_cnt INT;
+	SELECT COUNT(1) 
+		FROM `trainings` 
+		WHERE `id_trainings` = `v_id_trainings`
+		LIMIT 1 INTO @v_cnt;
+	RETURN @v_cnt = 1;
+END;
+//
+DELIMITER ;
+
+SHOW FUNCTION STATUS LIKE 'training%';
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `training_localization_id_trainings_foreign`
+    BEFORE INSERT ON `training_localization` FOR EACH ROW
+    BEGIN
+	    IF !training_exists(NEW.id_trainings)  THEN
+	    	SIGNAL SQLSTATE '45000' SET
+	    	MYSQL_ERRNO=1234,
+	    	MESSAGE_TEXT='Foreign Key training_localization_id_trainings_foreign violation';
+	    END IF;
+	END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE TRIGGER `training_localization_assign_partition`
+    BEFORE INSERT ON `training_localization` FOR EACH ROW
+    FOLLOWS `training_localization_id_trainings_foreign`
+    BEGIN
+	    IF NEW.training_day_part IS NULL THEN
+	    	SET NEW.training_day_part = training_day(NEW.id_trainings);
+	    END IF;
+	END;
+//
+DELIMITER ;
 
 ALTER TABLE `training_localization` ADD INDEX `training_localization_id_trainings_index` (`id_trainings`);
 ALTER TABLE `training_localization` ADD INDEX `training_localization_timestamp_index` (`timestamp`);
@@ -146,3 +212,6 @@ CREATE OR REPLACE TRIGGER `trainings_set_updated_at`
     END;
 //
 DELIMITER ;
+
+
+
