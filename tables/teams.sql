@@ -163,3 +163,24 @@ CREATE OR REPLACE TRIGGER `user_team_roles_set_updated_at`
     END;
 //
 DELIMITER ;
+
+DELIMITER //
+CREATE OR REPLACE PROCEDURE team_soft_delete (
+    IN 'v_id_teams' BIGINT UNSIGNED,
+    IN 'v_id_users' BIGINT UNSIGED
+)
+BEGIN
+    UPDATE 'teams'
+    SET 'deleted_at' = NOW()
+    WHERE 'id_teams' = 'v_id_teams';
+
+    UPDATE 'team_dashboards'
+    SET 'deleted_at' = NOW(), 'deleted_by' = 'v_id_users'
+    WHERE 'id_teams' = 'v_id_team's;
+
+    UPDATE 'user_team_roles'
+    SET 'deleted_at' = NOW()
+    WHERE 'id_teams' = 'v_id_teams';
+END;
+//
+DELIMITER ;
