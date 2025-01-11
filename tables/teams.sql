@@ -50,6 +50,7 @@ CREATE TABLE `teams`(
 );
 
 ALTER TABLE `teams` ADD INDEX `teams_deleted_at_index`(`deleted_at`);
+ALTER TABLE 'teams' ADD FULLTEXT INDEX 'teams_name_flltext'('name');
 
 -- ====================================================================================================
 -- ROLES
