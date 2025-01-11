@@ -15,7 +15,7 @@ CREATE TABLE `leaderboards`(
 
     `priority` BIGINT NOT NULL CHECK (`priority` > 0),
     `period_days` BIGINT NOT NULL CHECK (`period_days` > 0),
-    `criterion` ENUM(
+    `criterion_data` ENUM(
         'training_count', 
         'training_time', 
         'length_max_km', 
@@ -23,6 +23,12 @@ CREATE TABLE `leaderboards`(
         'calories_sum_km', 
         'velocity_max_m_s', 
         'velocity_mean_m_s'
+    ) NOT NULL,
+    `criterion_type` ENUM(
+        'bieganie',
+        'rower szosowy',
+        'rower gorski',
+        'trekking'
     ) NOT NULL,
     
     `created_at` TIMESTAMP NOT NULL,

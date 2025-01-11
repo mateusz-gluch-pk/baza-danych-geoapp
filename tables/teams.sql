@@ -50,7 +50,7 @@ CREATE TABLE `teams`(
 );
 
 ALTER TABLE `teams` ADD INDEX `teams_deleted_at_index`(`deleted_at`);
-ALTER TABLE 'teams' ADD FULLTEXT INDEX 'teams_name_fulltext_index'('name');
+ALTER TABLE `teams` ADD FULLTEXT INDEX `teams_name_fulltext_index`(`name`);
 
 -- ====================================================================================================
 -- ROLES
@@ -98,7 +98,7 @@ CREATE TABLE `user_team_roles`(
         ON DELETE CASCADE
 );
 
-ALTER TABLE 'user_team_roles' ADD INDEX 'user_team_roles_deleted_at_index'('deleted_at');
+ALTER TABLE `user_team_roles` ADD INDEX `user_team_roles_deleted_at_index`(`deleted_at`);
 
 DELIMITER //
 CREATE OR REPLACE PROCEDURE teams_soft_delete(
@@ -169,25 +169,25 @@ DELIMITER ;
 
 DELIMITER //
 CREATE OR REPLACE PROCEDURE team_soft_delete (
-    IN 'v_id_teams' BIGINT UNSIGNED,
-    IN 'v_id_users' BIGINT UNSIGED
+    IN `v_id_teams` BIGINT UNSIGNED,
+    IN `v_id_users` BIGINT UNSIGED
 )
 BEGIN
-    UPDATE 'teams'
-    SET 'deleted_at' = NOW()
-    WHERE 'id_teams' = 'v_id_teams';
+    UPDATE `teams`
+    SET `deleted_at` = NOW()
+    WHERE `id_teams` = `v_id_teams`;
 
-    UPDATE 'team_dashboards'
-    SET 'deleted_at' = NOW(), 'deleted_by' = 'v_id_users'
-    WHERE 'id_teams' = 'v_id_team's;
+    UPDATE `team_dashboards`
+    SET `deleted_at` = NOW(), `deleted_by` = `v_id_users`
+    WHERE `id_teams` = `v_id_teams`;
 
-    UPDATE 'user_team_roles'
-    SET 'deleted_at' = NOW()
-    WHERE 'id_teams' = 'v_id_teams';
+    UPDATE `user_team_roles`
+    SET `deleted_at` = NOW()
+    WHERE `id_teams` = `v_id_teams`;
 
-    UPDATE 'leaderboards'
-    SET 'deleted_at' = NOW()
-    WHERE 'id_teams' = 'v_id_teams'
+    UPDATE `leaderboards`
+    SET `deleted_at` = NOW()
+    WHERE `id_teams` = `v_id_teams`
 END;
 //
 DELIMITER ;
