@@ -24,7 +24,7 @@ CREATE TABLE `leaderboards`(
         'velocity_max_m_s', 
         'velocity_mean_m_s'
     ) NOT NULL,
-    'criterion_type' ENUM(
+    `criterion_type` ENUM(
         'bieganie',
         'rower szosowy',
         'rower gorski',
