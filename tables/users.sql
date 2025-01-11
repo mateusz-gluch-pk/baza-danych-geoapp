@@ -74,3 +74,30 @@ CREATE OR REPLACE TRIGGER `users_set_updated_at`
 //
 DELIMITER ;
 
+DELIMITER //
+CREATE OR REPLACE PROCEDURE user_soft_delete (
+    IN 'v_id_users' BIGINT UNSIGNED
+)
+BEGIN
+    UPDATE 'users'
+    SET 'deleted_at' = NOW()
+    WHERE 'id_users' = 'v_id_users';
+
+    UPDATE 'user_dashboards'
+    SET 'deleted_at' = NOW()
+    WHERE 'id_users' = 'v_id_users';
+
+    UPDATE 'user_configurations'
+    SET 'deleted_at' = NOW()
+    WHERE 'id_users' = 'v_id_users';
+
+    UPDATE 'trainings'
+    SET 'deleted_at' = NOW()
+    WHERE 'id_users' = 'v_id_users';
+    
+    UPDATE 'user_team_roles'
+    SET 'deleted_at' = NOW()
+    WHERE 'id_users' = 'v_id_users';
+END;
+//
+DELIMITER ;
