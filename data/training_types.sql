@@ -3,5 +3,5 @@ INSERT INTO training_types
 VALUES 
 	('bieganie', 100, 1, 1, 1), 
 	('rower szosowy', 1000, 0.2, 0.3, 0.5), 
-	('rower górski', 1000, 0.15, 0.21, 0.37), 
+	('rower gorski', 1000, 0.15, 0.21, 0.37), 
 	('trekking', 100, 2, 2.1, 3.7);
